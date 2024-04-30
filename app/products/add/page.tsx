@@ -5,12 +5,17 @@ import Input from "@/components/input";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { uploadProduct } from "./actions";
-import { useFormState } from "react-hook-form";
+import { useForm, useFormState } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema, productType } from "./schema";
 
 export default function AddProduct() {
   const [preview, setPreview] = useState("");
   const [isImageUploaded, setIsImageUploaded] = useState(false); // 이미지 업로드 여부 상태
   const [isValidSize, setIsValidSize] = useState(true); // 이미지 사이즈 유효성 상태
+  const { register, handleSubmit } = useForm<productType>({
+    resolver: zodResolver(productSchema),
+  });
 
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
@@ -78,13 +83,18 @@ export default function AddProduct() {
         />
         {/* 유저가 이미지를 업로드 할 떄 form을 보기 좋게 만드는 작은 트릭 */}
 
-        <Input name="title" required placeholder="제목" type="text" />
-        <Input name="price" required placeholder="가격" type="number" />
+        <Input required placeholder="제목" type="text" {...register("title")} />
         <Input
-          name="description"
+          required
+          placeholder="가격"
+          type="number"
+          {...register("price")}
+        />
+        <Input
           required
           placeholder="자세한 설명"
           type="text"
+          {...register("description")}
         />
         <Button text="작성 완료" />
       </form>
